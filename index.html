@@ -506,7 +506,7 @@
   .bf { background: var(--void); padding: 38px 32px; display: flex; gap: 20px; transition: background 0.5s var(--ease); }
   .section.alt .bf { background: var(--void-2); }
   .bf:hover { background: #101016; }
-  .bf .bn { font-family: var(--serif); font-weight: 300; font-size: 24px; color: var(--ink-faint); line-height: 1; }
+  .bf .bn { font-family: var(--serif); font-weight: 300; font-size: 26px; color: var(--teal); line-height: 1; transition: color 0.35s var(--ease); }
   .bf p { font-size: 14px; font-weight: 300; line-height: 1.6; color: var(--ink-dim); }
 
   /* ---------- 09 Founder ---------- */
@@ -659,7 +659,8 @@
     transition: transform 0.5s var(--ease); border-radius: 2px;
   }
   .called-row:hover::before { transform: scaleY(1); }
-  .called-row:hover .ci { color: #4d7cff; }
+  .called-row:hover .ci,
+  .bf:hover .bn { color: #4d7cff; }
 
   /* quote card + founder visual lift on hover */
   .quote-card { transition: transform .5s var(--ease), box-shadow .5s var(--ease), border-color .5s ease; }

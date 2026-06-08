@@ -31,6 +31,22 @@
 
   html { background: var(--void); scroll-behavior: smooth; }
 
+  /* ---------- Branded scrollbar ---------- */
+  /* Firefox */
+  html { scrollbar-width: thin; scrollbar-color: #2bbfb0 #0a0a0e; }
+  /* WebKit / Chromium / Safari */
+  ::-webkit-scrollbar { width: 12px; height: 12px; }
+  ::-webkit-scrollbar-track { background: #0a0a0e; }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #1fb6a6 0%, #4d7cff 50%, #7b4bc4 100%);
+    border-radius: 10px;
+    border: 2px solid #0a0a0e;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #2ff0d4 0%, #6a9bff 50%, #9b6bff 100%);
+  }
+  ::-webkit-scrollbar-corner { background: #0a0a0e; }
+
   body {
     background: var(--void);
     color: var(--ink);
@@ -588,7 +604,20 @@
   body.static .hero .stack .cta { margin-top: 34px; pointer-events: auto; }
   body.static .scroll-hint, body.static .progress-rail { display: none; }
 
+  /* carousel "swipe" affordance (only shown on mobile, injected by JS) */
+  .swipe-hint { display: none; }
+  /* carousel loop-clones must never appear outside the mobile carousel */
+  @media (min-width: 721px) { .cln { display: none !important; } }
+
   @media (max-width: 720px) {
+    .swipe-hint {
+      display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+      font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--teal); margin: -6px 0 14px;
+    }
+    .swipe-hint .sh-arrow { font-size: 14px; animation: swipeArrow 1.4s var(--ease) infinite; }
+    @keyframes swipeArrow { 0%,100%{ transform: translateX(0); opacity: 0.5; } 50%{ transform: translateX(7px); opacity: 1; } }
+
     .nav, .nav.scrolled { padding: 14px 20px; }
     .section { padding: 11vh 7vw; }
     .sec-head { margin-bottom: 42px; gap: 12px; }
@@ -599,7 +628,8 @@
     .caption p { font-size: 15px; }
     .cap-1, .cap-3 { left: 6vw; right: 6vw; }
     .cap-2 { right: 6vw; left: 6vw; }
-    .cap-4 { max-width: calc(100vw - 28px); }
+    .cap-4 { width: calc(100vw - 28px); max-width: calc(100vw - 28px); }
+    .cap-4 .cta { white-space: nowrap; }
     .progress-rail { display: none; }
     .cursor-dot, .cursor-ring { display: none; }
     .svc { padding: 34px 26px; min-height: 0; }
@@ -611,16 +641,62 @@
     .called-row { padding: 28px 0; }
     .builtfor { grid-template-columns: 1fr 1fr; }
     .begin { padding: 14vh 7vw; }
-    .begin h2 { font-size: clamp(16px, 4.2vw, 40px); }
+    /* standardise the closing heading to the same scale as section titles */
+    .begin h2 { font-size: clamp(26px, 7vw, 40px); line-height: 1.18; max-width: 20ch; }
+    .begin h2 .begin-line { display: block; white-space: normal; }
     footer { padding: 64px 7vw 36px; }
+    /* tidy buttons on phones — smaller text/tracking so labels don't wrap badly */
+    .cta {
+      font-size: 11px; letter-spacing: 0.1em; gap: 9px;
+      padding: 14px 24px; line-height: 1.35; text-align: center;
+    }
+    .cap-4 .cta { margin-top: 28px; }
+
+    /* hide the benchmark graph cell on phones */
+    .svc.svc-visual { display: none !important; }
+
+    /* ---- MOBILE CARD CAROUSELS (cut the endless vertical scroll) ---- */
+    .services, .method, .publish, .builtfor {
+      display: flex; flex-wrap: nowrap; gap: 14px;
+      background: transparent; border: none;
+      overflow-x: auto; overflow-y: visible;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 14px;
+      scrollbar-width: thin; scrollbar-color: #2bbfb0 rgba(237,234,226,0.08);
+    }
+    .services > *, .method > *, .publish > *, .builtfor > * {
+      scroll-snap-align: start;
+      border: 1px solid var(--hairline-soft);
+      border-radius: 14px;
+    }
+    .services > * { flex: 0 0 84%; }
+    .svc.hero-svc { flex: 0 0 84%; grid-column: auto; }
+    .method > * { flex: 0 0 62%; }
+    .publish > * { flex: 0 0 80%; }
+    .builtfor > * { flex: 0 0 76%; }
+    /* slimmer branded scrollbar for the carousels */
+    .services::-webkit-scrollbar, .method::-webkit-scrollbar,
+    .publish::-webkit-scrollbar, .builtfor::-webkit-scrollbar { height: 6px; }
+    .services::-webkit-scrollbar-thumb, .method::-webkit-scrollbar-thumb,
+    .publish::-webkit-scrollbar-thumb, .builtfor::-webkit-scrollbar-thumb {
+      background: linear-gradient(90deg, #1fb6a6, #4d7cff, #7b4bc4); border-radius: 999px; border: none;
+    }
+    .services::-webkit-scrollbar-track, .method::-webkit-scrollbar-track,
+    .publish::-webkit-scrollbar-track, .builtfor::-webkit-scrollbar-track {
+      background: rgba(237,234,226,0.06); border-radius: 999px;
+    }
   }
   @media (max-width: 480px) {
-    .nav .brand img.icon, .nav.scrolled .brand img.icon { height: 38px; }
-    .nav .brand img.word, .nav.scrolled .brand img.word { height: 22px; }
+    /* larger nav logo on phones */
+    .nav .brand img.icon, .nav.scrolled .brand img.icon { height: 54px; }
+    .nav .brand img.word, .nav.scrolled .brand img.word { height: 32px; }
+    .nav .brand { gap: 10px; }
     .builtfor { grid-template-columns: 1fr; }
     .theme-tags span { font-size: 12px; padding: 8px 13px; }
     .mobile-menu a { font-size: 26px; }
     .foot-bottom { flex-direction: column; align-items: flex-start; }
+    .cta { font-size: 10.5px; letter-spacing: 0.09em; padding: 13px 20px; }
   }
 
   /* ===================================================================
@@ -908,7 +984,24 @@
   .modal-success p { font-size: 15px; font-weight: 300; color: var(--body); line-height: 1.6; margin-bottom: 26px; }
   .modal-success .modal-submit { width: auto; padding: 14px 34px; }
 
-  @media (max-width: 520px){ .modal-scroll { padding: 36px 24px 30px; } }
+  @media (max-width: 520px){
+    .modal-overlay { padding: 14px; }
+    .modal-scroll { padding: 30px 20px 26px; max-height: calc(100vh - 28px); }
+    .modal-eyebrow { margin-bottom: 10px; }
+    .modal h3 { font-size: 24px; }
+    .modal-sub { font-size: 14px; margin-bottom: 20px; }
+    .field-row { gap: 12px; }
+    .field { margin-bottom: 14px; }
+    .field input, .field textarea { font-size: 14px; padding: 16px 14px 7px; }
+    .field label { font-size: 14px; }
+    .field textarea { min-height: 70px; }
+    .seg-group { margin: 2px 0 16px; }
+    .seg { gap: 7px; }
+    .seg button { font-size: 12px; padding: 8px 12px; }
+    .modal-submit { padding: 14px 22px; }
+    .modal-fineprint { font-size: 12px; margin-top: 14px; }
+    .modal-close { top: 12px; right: 12px; width: 34px; height: 34px; font-size: 20px; }
+  }
 
   /* premise lede fully white */
   .premise .lede { color: var(--ink); }
@@ -1568,13 +1661,11 @@ if (reduceMotion) {
 } else {
   preload();
   gsap.registerPlugin(ScrollTrigger);
-  // Make the pinned scrub behave on touch devices: don't refresh on the
-  // address-bar show/hide (which causes jumps), and normalize touch scrolling
-  // so the pin tracks the finger smoothly.
+  // Keep the pinned scrub stable on touch without refreshing on the address-bar
+  // show/hide. NOTE: we deliberately do NOT use ScrollTrigger.normalizeScroll()
+  // here — it hijacks all touch scrolling and breaks horizontal swipe inside the
+  // mobile card carousels.
   ScrollTrigger.config({ ignoreMobileResize: true });
-  if (matchMedia("(hover: none) and (pointer: coarse)").matches) {
-    try { ScrollTrigger.normalizeScroll(true); } catch (e) {}
-  }
 
   let targetFrame = 0;   // where the scroll wants us
   let smoothFrame = 0;   // eased value actually drawn
@@ -1640,6 +1731,73 @@ window.addEventListener("scroll", () => {
   addEventListener("scroll", update, { passive: true });
   addEventListener("resize", update);
   update();
+})();
+
+/* ===================== MOBILE CAROUSEL SWIPE HINTS ===================== */
+(function carouselHints() {
+  if (!matchMedia("(max-width: 720px)").matches) return;
+  [".services", ".method", ".publish", ".builtfor"].forEach(sel => {
+    document.querySelectorAll(sel).forEach(grid => {
+      if (grid.previousElementSibling && grid.previousElementSibling.classList.contains("swipe-hint")) return;
+      const hint = document.createElement("div");
+      hint.className = "swipe-hint";
+      hint.innerHTML = '<span>Swipe</span><span class="sh-arrow">→</span>';
+      grid.parentNode.insertBefore(hint, grid);
+    });
+  });
+})();
+
+/* ===================== INFINITE (LOOPING) CAROUSELS ===================== */
+(function infiniteCarousels() {
+  if (!matchMedia("(max-width: 720px)").matches) return;
+  [".services", ".method", ".publish", ".builtfor"].forEach(sel =>
+    document.querySelectorAll(sel).forEach(setupLoop));
+
+  function setupLoop(grid) {
+    // only the cards actually shown in the carousel (skip hidden cells)
+    const originals = [...grid.children].filter(c =>
+      !c.classList.contains("cln") && getComputedStyle(c).display !== "none");
+    const n = originals.length;
+    if (n < 2) return;
+
+    const clone = c => {
+      const k = c.cloneNode(true);
+      k.classList.add("cln");
+      k.setAttribute("aria-hidden", "true");
+      k.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
+      return k;
+    };
+    // layout becomes:  [ pre copies ][ originals ][ post copies ]
+    originals.map(clone).forEach(c => grid.appendChild(c));
+    originals.map(clone).reverse().forEach(c => grid.insertBefore(c, grid.firstChild));
+
+    const visKids = () => [...grid.children].filter(c => getComputedStyle(c).display !== "none");
+    let setWidth = 0, jumping = false, raf = 0;
+
+    function measure() {
+      const kids = visKids();
+      if (kids.length < n * 2) return;
+      setWidth = kids[n].offsetLeft - kids[0].offsetLeft;   // width of one full set
+      if (!setWidth) return;
+      jumping = true;
+      grid.scrollLeft = kids[n].offsetLeft;                 // start on the first original
+      requestAnimationFrame(() => { jumping = false; });
+    }
+
+    grid.addEventListener("scroll", () => {
+      if (jumping || !setWidth) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const x = grid.scrollLeft;
+        if (x < setWidth - 2) grid.scrollLeft = x + setWidth;          // scrolled before first → wrap to end
+        else if (x >= setWidth * 2 - 2) grid.scrollLeft = x - setWidth; // scrolled past last → wrap to start
+      });
+    }, { passive: true });
+
+    requestAnimationFrame(measure);
+    setTimeout(measure, 350);
+    let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(measure, 120); });
+  }
 })();
 
 /* ===================== CARD CURSOR SPOTLIGHT ===================== */
@@ -1763,8 +1921,23 @@ function revealInView() {
 }
 window.addEventListener("load", () => setTimeout(revealInView, 80));
 window.addEventListener("hashchange", () => setTimeout(revealInView, 120));
-document.querySelectorAll('a[href^="#"]:not([data-contact])').forEach(a =>
-  a.addEventListener("click", () => setTimeout(revealInView, 160)));
+
+/* In-page nav: jump straight to the target instead of smooth-scrolling through
+   the long pinned hero (which is what glitched / went blank). Lands cleanly
+   because the pin-spacer reserves real layout space, then reveals the section. */
+document.querySelectorAll('a[href^="#"]:not([data-contact])').forEach(a => {
+  a.addEventListener("click", e => {
+    const id = a.getAttribute("href");
+    if (!id || id.length < 2) return;            // ignore bare "#"
+    const target = document.querySelector(id);
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: "instant", block: "start" });
+    history.replaceState(null, "", id);
+    requestAnimationFrame(revealInView);
+    setTimeout(revealInView, 60);
+  });
+});
 
 /* ===================== CUSTOM CURSOR ===================== */
 (function cursor() {

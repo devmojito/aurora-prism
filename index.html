@@ -660,11 +660,15 @@
       display: flex; flex-wrap: nowrap; gap: 14px;
       background: transparent; border: none;
       overflow-x: auto; overflow-y: visible;
-      scroll-snap-type: x mandatory;
+      /* proximity (not mandatory) so the wrap reposition doesn't fight snapping */
+      scroll-snap-type: x proximity;
       -webkit-overflow-scrolling: touch;
-      padding-bottom: 14px;
-      scrollbar-width: thin; scrollbar-color: #2bbfb0 rgba(237,234,226,0.08);
+      padding-bottom: 4px;
+      /* hide the native bar — it teleports at the loop seam; we use dots instead */
+      scrollbar-width: none; -ms-overflow-style: none;
     }
+    .services::-webkit-scrollbar, .method::-webkit-scrollbar,
+    .publish::-webkit-scrollbar, .builtfor::-webkit-scrollbar { display: none; width: 0; height: 0; }
     .services > *, .method > *, .publish > *, .builtfor > * {
       scroll-snap-align: start;
       border: 1px solid var(--hairline-soft);
@@ -675,18 +679,18 @@
     .method > * { flex: 0 0 62%; }
     .publish > * { flex: 0 0 80%; }
     .builtfor > * { flex: 0 0 76%; }
-    /* slimmer branded scrollbar for the carousels */
-    .services::-webkit-scrollbar, .method::-webkit-scrollbar,
-    .publish::-webkit-scrollbar, .builtfor::-webkit-scrollbar { height: 6px; }
-    .services::-webkit-scrollbar-thumb, .method::-webkit-scrollbar-thumb,
-    .publish::-webkit-scrollbar-thumb, .builtfor::-webkit-scrollbar-thumb {
-      background: linear-gradient(90deg, #1fb6a6, #4d7cff, #7b4bc4); border-radius: 999px; border: none;
+
+    /* dots position indicator (replaces the jumpy scrollbar) */
+    .car-dots { display: flex; justify-content: center; gap: 7px; margin-top: 16px; }
+    .car-dots .dot {
+      width: 6px; height: 6px; border-radius: 999px; background: rgba(237,234,226,0.22);
+      transition: width 0.35s var(--ease), background 0.35s ease;
     }
-    .services::-webkit-scrollbar-track, .method::-webkit-scrollbar-track,
-    .publish::-webkit-scrollbar-track, .builtfor::-webkit-scrollbar-track {
-      background: rgba(237,234,226,0.06); border-radius: 999px;
+    .car-dots .dot.active {
+      width: 22px; background: linear-gradient(90deg, var(--teal), var(--purple));
     }
   }
+  .car-dots { display: none; }
   @media (max-width: 480px) {
     /* larger nav logo on phones */
     .nav .brand img.icon, .nav.scrolled .brand img.icon { height: 54px; }
@@ -1774,6 +1778,24 @@ window.addEventListener("scroll", () => {
     const visKids = () => [...grid.children].filter(c => getComputedStyle(c).display !== "none");
     let setWidth = 0, jumping = false, raf = 0;
 
+    // dots indicator (smooth, modulo-based — never teleports like a scrollbar)
+    const dots = document.createElement("div");
+    dots.className = "car-dots";
+    for (let k = 0; k < n; k++) {
+      const dt = document.createElement("span");
+      dt.className = "dot" + (k === 0 ? " active" : "");
+      dots.appendChild(dt);
+    }
+    grid.parentNode.insertBefore(dots, grid.nextSibling);
+    const dotEls = [...dots.children];
+    function updateDots() {
+      if (!setWidth) return;
+      const pitch = setWidth / n;
+      let idx = Math.round(grid.scrollLeft / pitch);
+      idx = ((idx % n) + n) % n;
+      dotEls.forEach((d, j) => d.classList.toggle("active", j === idx));
+    }
+
     function measure() {
       const kids = visKids();
       if (kids.length < n * 2) return;
@@ -1781,16 +1803,18 @@ window.addEventListener("scroll", () => {
       if (!setWidth) return;
       jumping = true;
       grid.scrollLeft = kids[n].offsetLeft;                 // start on the first original
-      requestAnimationFrame(() => { jumping = false; });
+      requestAnimationFrame(() => { jumping = false; updateDots(); });
     }
 
     grid.addEventListener("scroll", () => {
-      if (jumping || !setWidth) return;
+      if (!setWidth) return;
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
+        updateDots();                                       // dots always track logical position
+        if (jumping) return;
         const x = grid.scrollLeft;
-        if (x < setWidth - 2) grid.scrollLeft = x + setWidth;          // scrolled before first → wrap to end
-        else if (x >= setWidth * 2 - 2) grid.scrollLeft = x - setWidth; // scrolled past last → wrap to start
+        if (x < setWidth - 2) grid.scrollLeft = x + setWidth;          // before first → wrap to end
+        else if (x >= setWidth * 2 - 2) grid.scrollLeft = x - setWidth; // past last → wrap to start
       });
     }, { passive: true });
 

@@ -37,6 +37,7 @@
     font-family: var(--sans);
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    overflow-anchor: none; /* stop the browser fighting ScrollTrigger's pin */
   }
 
   ::selection { background: rgba(237,234,226,0.92); color: var(--void); }
@@ -912,6 +913,10 @@
   /* premise lede fully white */
   .premise .lede { color: var(--ink); }
 
+  /* in-section contact CTAs */
+  .section-cta { margin-top: 44px; }
+  .founder .section-cta { margin-top: 30px; }
+
   /* ===================================================================
      BUTTON HOVER OVERHAUL — glossy light sweep + crisp lift + deep glow
      =================================================================== */
@@ -1176,6 +1181,7 @@
         </div>
       </div>
       <p class="services-foot reveal">Each engagement is scoped around the decision, the depth of expert input required &amp; the deliverable expected.</p>
+      <div class="section-cta reveal"><a class="cta" href="#begin" data-cursor data-contact>Scope an Engagement <span class="arr">→</span></a></div>
     </section>
 
     <!-- ============ 03 METHOD ============ -->
@@ -1246,6 +1252,7 @@
           <cite>On why APC's network matters</cite>
         </div>
       </div>
+      <div class="section-cta reveal"><a class="cta" href="#begin" data-cursor data-contact>Bring the Network to Your Decision <span class="arr">→</span></a></div>
     </section>
 
     <!-- ============ 06 PUBLISH ============ -->
@@ -1306,6 +1313,7 @@
           <div><div class="ct">A company needs to compare build models.</div><div class="cd">Captive, BOT, JV, hub, partner-led or do-not-build. APC helps score the choices against strategy, capability, risk &amp; timing.</div></div>
         </div>
       </div>
+      <div class="section-cta reveal"><a class="cta" href="#begin" data-cursor data-contact>Recognise Your Situation? Let's Talk <span class="arr">→</span></a></div>
     </section>
 
     <!-- ============ 08 BUILT FOR ============ -->
@@ -1337,6 +1345,7 @@
         <div class="reveal d2">
           <p>Aurora Prism Consulting is founder-led by <strong>Anirudh Pandey.</strong> He is an Indian School of Business alumnus, Dean's List awardee &amp; Research Manager at ISB's Centre for Business Innovation. His work spans corporate roles, two founder ventures &amp; research-led engagement on GCCs, fintech, market-based assets &amp; capability-led growth.</p>
           <p>APC combines field-tested operating experience with access to senior professors, CXOs &amp; GCC leaders, so clients reach sharper decisions before they commit capital, leadership time or reputation.</p>
+          <div class="section-cta reveal"><a class="cta" href="#begin" data-cursor data-contact>Speak With the Founder <span class="arr">→</span></a></div>
         </div>
       </div>
     </section>
@@ -1457,6 +1466,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
+/* keep the browser from restoring an old scroll position into the pinned hero */
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
 /* ===================== HERO FRAME SCRUB ===================== */
 const FRAME_COUNT = 186;
 const framePath = i => `frames/frame_${String(i).padStart(4, "0")}.webp`;
@@ -1566,11 +1578,11 @@ if (reduceMotion) {
 
   let targetFrame = 0;   // where the scroll wants us
   let smoothFrame = 0;   // eased value actually drawn
-  let heroActive = true; // only run the render loop while the hero matters
+  let inView = true;     // is the hero pin currently on screen?
 
   const st = ScrollTrigger.create({
     trigger: "#hero", start: "top top", end: `+=${SCROLL_LENGTH * 100}%`,
-    pin: true, anticipatePin: 1,
+    pin: true, anticipatePin: 1, invalidateOnRefresh: true,
     onUpdate(self) {
       const p = self.progress;
       targetFrame = p * (FRAME_COUNT - 1);
@@ -1578,31 +1590,36 @@ if (reduceMotion) {
       railFill.style.height = p * 100 + "%";
       hint.style.opacity = p > 0.04 ? 0 : 1;
       rail.style.opacity = p >= 1 ? 0 : 1;
-      heroActive = true;
     },
-    // when the layout recalculates (resize, page-height change, re-pin),
-    // force a repaint so the canvas can never be left blank
+    // force a repaint whenever the layout recalculates (resize, re-pin, refresh)
     onRefresh() { drawFrame(currentFrame); },
-    onToggle(self) { if (self.isActive) heroActive = true; },
+    // track whether the hero is on screen so we can pause drawing when it isn't
+    onToggle(self) { inView = self.isActive; if (self.isActive) drawFrame(currentFrame); },
   });
 
-  // Continuous render loop: always repaints the current frame, which makes
-  // scrolling back up (or any re-pin) impossible to leave blank.
+  // Continuous render loop. While the hero is in view it ALWAYS repaints the
+  // current frame every animation tick — so scrolling back up (or any re-pin /
+  // scroll-restoration) can never leave a stale or blank frame on the canvas.
   function render() {
-    smoothFrame += (targetFrame - smoothFrame) * 0.18;
+    smoothFrame += (targetFrame - smoothFrame) * 0.2;
     let f = Math.round(smoothFrame);
     if (f < 0) f = 0; else if (f > FRAME_COUNT - 1) f = FRAME_COUNT - 1;
     currentFrame = f;
-    // keep drawing for a short while after motion settles, then idle to save battery
-    const settled = Math.abs(targetFrame - smoothFrame) < 0.05;
-    if (!settled || heroActive) {
-      drawFrame(f);
-      if (settled) heroActive = false; // one final clean paint, then idle
-    }
+    if (inView) drawFrame(f);
     requestAnimationFrame(render);
   }
   render();
   updateCaptions(0);
+
+  // settle the pin math once images/fonts are in, then honour any deep link
+  window.addEventListener("load", () => {
+    ScrollTrigger.refresh();
+    if (location.hash) {
+      const t = document.querySelector(location.hash);
+      if (t) setTimeout(() => t.scrollIntoView(), 60);
+    }
+    drawFrame(currentFrame);
+  });
 }
 
 /* ===================== NAV SCROLL STATE ===================== */
@@ -1734,6 +1751,20 @@ const io = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
 }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
 document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+/* Safety net: after a deep link / anchor jump the IntersectionObserver can miss
+   elements, leaving a section blank. Reveal anything already in (or above) the
+   viewport on load, on hash changes, and after anchor clicks. */
+function revealInView() {
+  document.querySelectorAll(".reveal:not(.in)").forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.top < innerHeight * 0.98) { el.classList.add("in"); io.unobserve(el); }
+  });
+}
+window.addEventListener("load", () => setTimeout(revealInView, 80));
+window.addEventListener("hashchange", () => setTimeout(revealInView, 120));
+document.querySelectorAll('a[href^="#"]:not([data-contact])').forEach(a =>
+  a.addEventListener("click", () => setTimeout(revealInView, 160)));
 
 /* ===================== CUSTOM CURSOR ===================== */
 (function cursor() {

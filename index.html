@@ -559,12 +559,12 @@
   .foot-logo .fword { height: 36px; width: auto; opacity: 0.92; display: block; transition: opacity 0.35s ease; }
   .foot-logo:hover .fword { opacity: 1; }
   .foot-brand p { font-size: 13.5px; font-weight: 300; line-height: 1.7; color: var(--ink-dim); max-width: 340px; }
-  .foot-col h5 { font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 22px; }
+  .foot-col h5 { font-size: 11px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--teal); margin-bottom: 22px; }
   .foot-col a, .foot-col p { display: block; font-size: 13.5px; font-weight: 300; color: var(--ink-dim); text-decoration: none; margin-bottom: 13px; transition: color 0.35s ease; line-height: 1.5; }
   .foot-col a:hover { color: var(--ink); }
   .foot-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 30px; border-top: 1px solid var(--hairline-soft); flex-wrap: wrap; gap: 16px; }
-  .foot-bottom .tag { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: 14px; color: var(--ink-dim); }
-  .foot-bottom .cr { font-size: 11.5px; letter-spacing: 0.06em; color: var(--ink-faint); }
+  .foot-bottom .tag { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 15px; color: var(--teal); }
+  .foot-bottom .cr { font-size: 11.5px; letter-spacing: 0.06em; color: var(--body); }
   .foot-bottom .credit { font-size: 12.5px; letter-spacing: 0.04em; color: var(--ink-dim); }
   .foot-bottom .credit a { color: var(--ink); text-decoration: none; border-bottom: 1px solid rgba(237,234,226,0.25); padding-bottom: 1px; transition: border-color 0.35s ease, color 0.35s ease; }
   .foot-bottom .credit a:hover { color: #fff; border-color: var(--teal); }
@@ -662,6 +662,11 @@
   .svc .outputs .ol, .svc .outputs .ov { transition: color 0.4s ease; }
   .svc:hover .outputs .ol { color: var(--teal); }
   .svc:hover .outputs .ov { color: #fff; }
+  /* decorative visual cell (fills the orphaned services slot) */
+  .svc-visual { display: flex; align-items: center; justify-content: center; padding: 24px; overflow: hidden; }
+  .svc-visual:hover { background: var(--void-2) !important; }
+  .svc-visual .bench-anim { width: 100%; max-width: 420px; height: auto; }
+  @media (max-width: 820px){ .svc-visual { min-height: 280px; } }
   .stage:hover { background: radial-gradient(280px circle at var(--mx) var(--my), rgba(77,124,255,0.18), transparent 62%), #0f0f16; }
   .pub:hover { background: radial-gradient(280px circle at var(--mx) var(--my), rgba(123,75,196,0.20), transparent 62%), #0f0f16; }
   .section.alt .pub:hover { background: radial-gradient(280px circle at var(--mx) var(--my), rgba(123,75,196,0.20), transparent 62%), #121219; }
@@ -780,9 +785,7 @@
 
   .modal {
     position: relative; width: 100%; max-width: 560px;
-    max-height: calc(100vh - 48px); overflow-x: hidden; overflow-y: auto;
-    border-radius: 22px;
-    padding: 44px 44px 38px;
+    overflow: hidden; border-radius: 22px;
     background:
       linear-gradient(150deg, rgba(20,22,30,0.92), rgba(10,11,16,0.94));
     border: 1px solid rgba(237,234,226,0.12);
@@ -795,7 +798,7 @@
 
   /* animated aurora glow bleeding from the top edge */
   .modal-aura {
-    position: absolute; top: -40%; left: -10%; right: -10%; height: 60%;
+    position: absolute; top: -40%; left: 0; right: 0; height: 60%;
     background:
       radial-gradient(40% 80% at 25% 100%, rgba(31,182,166,0.30), transparent 70%),
       radial-gradient(40% 80% at 75% 100%, rgba(123,75,196,0.28), transparent 70%),
@@ -816,7 +819,8 @@
   }
   .modal-close:hover { background: rgba(237,234,226,0.14); transform: rotate(90deg); border-color: rgba(237,234,226,0.3); }
 
-  .modal-pane { position: relative; z-index: 2; }
+  .modal-scroll { position: relative; z-index: 2; max-height: calc(100vh - 48px); overflow-y: auto; overflow-x: hidden; padding: 44px 44px 38px; }
+  .modal-pane { position: relative; }
   .modal-eyebrow { font-size: 12px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--teal); font-weight: 600; margin-bottom: 14px; }
   .modal h3 { font-family: var(--serif); font-weight: 300; font-size: clamp(26px, 3.4vw, 36px); line-height: 1.12; letter-spacing: -0.015em; margin-bottom: 12px; }
   .modal-sub { font-size: 15px; font-weight: 300; line-height: 1.6; color: var(--body); margin-bottom: 26px; }
@@ -824,7 +828,7 @@
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 520px){ .field-row { grid-template-columns: 1fr; } }
 
-  .field { position: relative; margin-bottom: 18px; }
+  .field { position: relative; margin-bottom: 18px; min-width: 0; }
   .field input, .field textarea {
     width: 100%; background: rgba(237,234,226,0.04);
     border: 1px solid rgba(237,234,226,0.14); border-radius: 12px;
@@ -903,7 +907,38 @@
   .modal-success p { font-size: 15px; font-weight: 300; color: var(--body); line-height: 1.6; margin-bottom: 26px; }
   .modal-success .modal-submit { width: auto; padding: 14px 34px; }
 
-  @media (max-width: 520px){ .modal { padding: 36px 24px 30px; } }
+  @media (max-width: 520px){ .modal-scroll { padding: 36px 24px 30px; } }
+
+  /* premise lede fully white */
+  .premise .lede { color: var(--ink); }
+
+  /* ===================================================================
+     BUTTON HOVER OVERHAUL — glossy light sweep + crisp lift + deep glow
+     =================================================================== */
+  .cta, .nav-cta, .mm-cta, .modal-submit:not(.ghost) { position: relative; overflow: hidden; }
+
+  /* the travelling gloss highlight */
+  .cta::before, .nav-cta::before, .mm-cta::before, .modal-submit:not(.ghost)::before {
+    content: ""; position: absolute; top: -20%; left: 0; width: 100%; height: 140%;
+    background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.42) 50%, transparent 70%);
+    transform: translateX(-135%); pointer-events: none; z-index: 1;
+    transition: transform 0.85s var(--ease);
+  }
+  .cta:hover::before, .nav-cta:hover::before, .mm-cta:hover::before,
+  .modal-submit:not(.ghost):hover::before { transform: translateX(135%); }
+
+  /* keep label + arrow above the sweep */
+  .cta > *, .nav-cta > *, .mm-cta > *, .modal-submit > * { position: relative; z-index: 2; }
+
+  /* refined hover: tighter lift, gentle scale, deeper coloured glow */
+  .cta:hover, .nav-cta:hover, .mm-cta:hover, .modal-submit:not(.ghost):hover {
+    transform: translateY(-3px) scale(1.022);
+    box-shadow: 0 24px 60px rgba(31,182,166,0.5), 0 16px 44px rgba(123,75,196,0.46);
+  }
+  .cap-4 .cta:hover { transform: translateY(-3px) scale(1.022); }
+  .cta:active, .nav-cta:active, .mm-cta:active, .modal-submit:active {
+    transform: translateY(-1px) scale(0.99); transition-duration: 0.12s;
+  }
 </style>
 </head>
 <body>
@@ -1072,6 +1107,73 @@
           </div>
           <span class="svc-line"></span>
         </article>
+
+        <!-- decorative cell that fills the orphaned grid slot -->
+        <div class="svc svc-visual" aria-hidden="true">
+          <svg class="bench-anim" viewBox="0 0 420 340" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="barG" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stop-color="#1fb6a6" stop-opacity="0.25"/>
+                <stop offset="55%" stop-color="#4d7cff" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="#7b4bc4"/>
+              </linearGradient>
+              <radialGradient id="benchGlow" cx="50%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#4d7cff" stop-opacity="0.20"/>
+                <stop offset="100%" stop-color="#4d7cff" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+
+            <rect x="0" y="0" width="420" height="340" fill="url(#benchGlow)"/>
+
+            <!-- gridlines -->
+            <g stroke="rgba(237,234,226,0.08)" stroke-width="1">
+              <line x1="40" y1="80" x2="392" y2="80"/>
+              <line x1="40" y1="140" x2="392" y2="140"/>
+              <line x1="40" y1="200" x2="392" y2="200"/>
+              <line x1="40" y1="260" x2="392" y2="260"/>
+            </g>
+            <line x1="40" y1="280" x2="392" y2="280" stroke="rgba(237,234,226,0.22)" stroke-width="1.5"/>
+
+            <!-- benchmark bars -->
+            <g class="bars">
+              <rect class="bar b1" x="62"  y="120" width="30" height="160" rx="5" fill="url(#barG)"/>
+              <rect class="bar b2" x="116" y="90"  width="30" height="190" rx="5" fill="url(#barG)"/>
+              <rect class="bar b3" x="170" y="150" width="30" height="130" rx="5" fill="url(#barG)"/>
+              <rect class="bar b4" x="224" y="70"  width="30" height="210" rx="5" fill="url(#barG)"/>
+              <rect class="bar b5" x="278" y="130" width="30" height="150" rx="5" fill="url(#barG)"/>
+              <rect class="bar b6" x="332" y="100" width="30" height="180" rx="5" fill="url(#barG)"/>
+            </g>
+
+            <!-- trend line + nodes -->
+            <polyline class="trend" points="77,120 131,90 185,150 239,70 293,130 347,100"
+              fill="none" stroke="#2ff0d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <g class="nodes" fill="#2ff0d4">
+              <circle cx="77" cy="120" r="3.5"/><circle cx="131" cy="90" r="3.5"/>
+              <circle cx="185" cy="150" r="3.5"/><circle cx="239" cy="70" r="3.5"/>
+              <circle cx="293" cy="130" r="3.5"/><circle cx="347" cy="100" r="3.5"/>
+            </g>
+
+            <!-- scanning line -->
+            <line class="scan" x1="40" y1="60" x2="392" y2="60" stroke="rgba(47,240,212,0.55)" stroke-width="1.5"/>
+
+            <style>
+              .bar { transform-box: fill-box; transform-origin: bottom; animation: barGrow 4.5s ease-in-out infinite; }
+              .b1 { animation-delay: .0s } .b2 { animation-delay: .3s } .b3 { animation-delay: .6s }
+              .b4 { animation-delay: .9s } .b5 { animation-delay: 1.2s } .b6 { animation-delay: 1.5s }
+              @keyframes barGrow { 0%,100% { transform: scaleY(0.55); } 50% { transform: scaleY(1); } }
+              .trend { stroke-dasharray: 520; stroke-dashoffset: 520; animation: draw 3.5s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(47,240,212,0.5)); }
+              @keyframes draw { 0% { stroke-dashoffset: 520; } 45%,100% { stroke-dashoffset: 0; } }
+              .nodes circle { opacity: 0; animation: pop 3.5s ease-in-out infinite; }
+              .nodes circle:nth-child(1){animation-delay:.4s}.nodes circle:nth-child(2){animation-delay:.8s}
+              .nodes circle:nth-child(3){animation-delay:1.2s}.nodes circle:nth-child(4){animation-delay:1.6s}
+              .nodes circle:nth-child(5){animation-delay:2.0s}.nodes circle:nth-child(6){animation-delay:2.4s}
+              @keyframes pop { 0%,20%{opacity:0;} 35%,100%{opacity:1;} }
+              .scan { animation: sweep 4.5s ease-in-out infinite; }
+              @keyframes sweep { 0%,100%{ transform: translateY(0); opacity:.2 } 50%{ transform: translateY(210px); opacity:.7 } }
+              @media (prefers-reduced-motion: reduce){ .bar,.trend,.nodes circle,.scan{ animation:none } .trend{stroke-dashoffset:0} .nodes circle{opacity:1} }
+            </style>
+          </svg>
+        </div>
       </div>
       <p class="services-foot reveal">Each engagement is scoped around the decision, the depth of expert input required &amp; the deliverable expected.</p>
     </section>
@@ -1288,6 +1390,7 @@
       <span class="modal-aura" aria-hidden="true"></span>
       <button class="modal-close" id="cmClose" aria-label="Close">&times;</button>
 
+      <div class="modal-scroll">
       <div class="modal-pane" id="cmForm">
         <div class="modal-eyebrow">Let's talk</div>
         <h3 id="cmTitle">Start a strategy conversation</h3>
@@ -1346,6 +1449,7 @@
         <h3>Thank you<span id="cmName"></span>.</h3>
         <p>Your note is in. We'll reply personally within two business days.</p>
         <button type="button" class="modal-submit ghost" id="cmDone">Close</button>
+      </div>
       </div>
     </div>
   </div>

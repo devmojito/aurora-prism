@@ -551,6 +551,7 @@
   .founder-visual { aspect-ratio: 4/5; border: 1px solid var(--hairline); border-radius: 6px; background: var(--void); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
   .founder-visual .prism-anim { width: 100%; height: 100%; display: block; }
   .founder-visual .founder-gif { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .founder-visual .founder-photo { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 18%; }
   @keyframes slowspin { to { transform: rotate(360deg); } }
   .founder h3 { font-family: var(--serif); font-weight: 300; font-size: clamp(26px, 2.6vw, 38px); line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 26px; }
   .founder p { font-size: 15px; font-weight: 300; line-height: 1.8; color: var(--ink-dim); margin-bottom: 20px; }
@@ -561,7 +562,14 @@
 
   /* ---------- 10 Begin ---------- */
   .begin { text-align: center; padding: 18vh 8vw; position: relative; overflow: hidden; }
-  .begin::before { content: ""; position: absolute; inset: 0; background: radial-gradient(60% 60% at 50% 40%, rgba(31,182,166,0.08), transparent 70%); pointer-events: none; }
+  /* ambient aurora behind the closing CTA */
+  .begin-aurora { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.32; }
+  .begin-aurora img { width: 100%; height: 100%; object-fit: cover; }
+  .begin-aurora::after { content: ""; position: absolute; inset: 0; background:
+    radial-gradient(70% 80% at 50% 45%, rgba(6,6,8,0.45), rgba(6,6,8,0.82) 100%),
+    linear-gradient(to bottom, rgba(6,6,8,0.7), transparent 28%, transparent 72%, rgba(6,6,8,0.85)); }
+  .begin::before { content: ""; position: absolute; inset: 0; z-index: 1; background: radial-gradient(60% 60% at 50% 40%, rgba(31,182,166,0.08), transparent 70%); pointer-events: none; }
+  .begin > .reveal { position: relative; z-index: 2; }
   .begin .bk { font-size: 14px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--teal); font-weight: 600; margin-bottom: 30px; position: relative; }
   .begin h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(36px, 5.4vw, 76px); line-height: 1.12; letter-spacing: -0.02em; max-width: 100%; margin: 0 auto 44px; position: relative; }
   .begin h2 .begin-line { display: block; white-space: nowrap; }
@@ -971,6 +979,10 @@
   .modal-submit.ghost { background: transparent; border: 1px solid rgba(237,234,226,0.2); box-shadow: none; animation: none; color: var(--ink); }
   .modal-submit.ghost:hover { background: rgba(237,234,226,0.06); }
 
+  .hp-field { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .modal-error { color: #ff7a7a; font-size: 13px; line-height: 1.5; margin-bottom: 14px; text-align: center; }
+  .modal-error a { color: #ff9d9d; }
+  .modal-submit[disabled] { opacity: 0.7; pointer-events: none; }
   .modal-fineprint { text-align: center; font-size: 12.5px; color: var(--ink-dim); margin-top: 16px; }
   .modal-fineprint a { color: var(--teal); text-decoration: none; border-bottom: 1px solid rgba(31,182,166,0.4); }
 
@@ -1437,7 +1449,7 @@
       </div>
       <div class="founder">
         <div class="founder-visual reveal d1" data-cursor>
-          <img class="founder-gif" src="https://media0.giphy.com/media/v1.Y2lkPTZjMDliOTUyYzl5NTBqYWltMWF4amFsbWl0djN1aTIzdGM5bmNyMDZ2NDFndHJlZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/krQzJaxbU1aXS/giphy.gif" alt="Aurora motion" loading="lazy" referrerpolicy="no-referrer">
+          <img class="founder-photo" src="founder.png" alt="Anirudh Pandey, founder of Aurora Prism Consulting" loading="lazy">
         </div>
         <div class="reveal d2">
           <p>Aurora Prism Consulting is founder-led by <strong>Anirudh Pandey.</strong> He is an Indian School of Business alumnus, Dean's List awardee &amp; Research Manager at ISB's Centre for Business Innovation. His work spans corporate roles, two founder ventures &amp; research-led engagement on GCCs, fintech, market-based assets &amp; capability-led growth.</p>
@@ -1449,6 +1461,9 @@
 
     <!-- ============ 10 BEGIN ============ -->
     <section class="section begin" id="begin">
+      <div class="begin-aurora" aria-hidden="true">
+        <img src="https://media0.giphy.com/media/v1.Y2lkPTZjMDliOTUyYzl5NTBqYWltMWF4amFsbWl0djN1aTIzdGM5bmNyMDZ2NDFndHJlZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/krQzJaxbU1aXS/giphy.gif" alt="" loading="lazy" referrerpolicy="no-referrer">
+      </div>
       <div class="bk reveal">10 / BEGIN</div>
       <h2 class="reveal d1"><span class="begin-line">Have a decision worth pressure-testing?</span><span class="begin-line"><em>Let's talk before you can't.</em></span></h2>
       <div class="reveal d2"><a class="cta" href="#begin" data-cursor data-contact>Start a Strategy Conversation <span class="arr">→</span></a></div>
@@ -1540,6 +1555,8 @@
             <span class="field-line"></span>
           </div>
 
+          <input type="text" name="website" id="cfWebsite" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <p class="modal-error" id="cmError" hidden></p>
           <button type="submit" class="modal-submit">Send the brief <span class="arr">→</span></button>
           <p class="modal-fineprint">Prefer email? <a href="mailto:hello@auroraprismconsulting.com">hello@auroraprismconsulting.com</a></p>
         </form>
@@ -1917,10 +1934,44 @@ window.addEventListener("scroll", () => {
       if (bad && ok) { inp.focus(); ok = false; }
     });
     if (!ok) return;
-    // no backend wired — show the success state (front-end only)
-    nameOut.textContent = name.value.trim() ? ", " + name.value.trim().split(" ")[0] : "";
-    formPane.style.display = "none";
-    success.classList.add("show");
+
+    const btn = form.querySelector(".modal-submit");
+    const errBox = document.getElementById("cmError");
+    const btnHTML = btn.innerHTML;
+    errBox.hidden = true;
+    btn.disabled = true;
+    btn.innerHTML = "Sending\u2026";
+
+    const payload = {
+      name: name.value.trim(),
+      email: email.value.trim(),
+      company: document.getElementById("cfCompany").value.trim(),
+      topic: topic.value || "",
+      message: document.getElementById("cfMsg").value.trim(),
+      website: document.getElementById("cfWebsite").value  // honeypot
+    };
+
+    const showSuccess = () => {
+      nameOut.textContent = payload.name ? ", " + payload.name.split(" ")[0] : "";
+      formPane.style.display = "none";
+      success.classList.add("show");
+    };
+    const showError = () => {
+      btn.disabled = false;
+      btn.innerHTML = btnHTML;
+      errBox.hidden = false;
+      errBox.innerHTML = 'Sorry — we couldn\u2019t send that. Please email us directly at ' +
+        '<a href="mailto:hello@auroraprismconsulting.com">hello@auroraprismconsulting.com</a>.';
+    };
+
+    fetch("contact.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+      .then(r => r.json())
+      .then(res => { if (res && res.ok) showSuccess(); else showError(); })
+      .catch(showError);
   });
 
   // clear invalid state as the user types
